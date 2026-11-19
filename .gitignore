@@ -1,0 +1,8 @@
+﻿.local/
+sources.local.json
+outputs/
+
+# Private working notes: kept on this computer, never published (public repo).
+MEMORY.md
+docs/
+.openai/

@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Treasury ROI Simulator | Jyoti Narang</title>
+<meta name="description" content="An interactive treasury transformation business-case simulator: working capital, bank fees, straight-through processing and cash-application exceptions.">
+<meta name="robots" content="noindex">
+<style>
+:root{--ink:#172e33;--muted:#596b6b;--paper:#f7f6f1;--panel:#fff;--line:#d4dcd5;--green:#244d43;--deep:#153d36;--lime:#d4e2a1;--gold:#a5834c;--bad:#a12b21;
+  --c1:#244d43;--c2:#6f8f5f;--c3:#a5834c;--c4:#4f7a8c}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.55 Arial,Helvetica,sans-serif}
+.wrap{max-width:1180px;margin:0 auto;padding:28px 20px 36px}
+.eyebrow{font-size:10px;letter-spacing:2px;font-weight:700;margin:0 0 10px;color:var(--muted)}
+h1{font:clamp(26px,3vw,36px)/1.15 Georgia,serif;letter-spacing:-.8px;margin:0 0 8px}
+h1 em{font-weight:normal;color:#57715c}
+.lede{color:var(--muted);max-width:700px;margin:0 0 24px;font-size:14px}
+.grid{display:grid;grid-template-columns:1.05fr 1fr;gap:28px;align-items:start}
+fieldset{border:1px solid var(--line);background:var(--panel);margin:0 0 14px;padding:16px 18px 6px}
+legend{font:italic 18px Georgia,serif;padding:0 6px}
+.row{display:grid;grid-template-columns:1fr 150px;gap:12px;align-items:center;margin-bottom:10px}
+.row label{font-size:13px}
+.row small{display:block;color:var(--muted);font-size:11px}
+.field{display:flex;align-items:center;border:1px solid var(--line);background:#fff}
+.field span{padding:0 8px;color:var(--muted);font-size:13px}
+.field input{width:100%;min-width:0;border:0;padding:10px 8px;font:15px Arial;color:var(--ink);background:transparent;text-align:right}
+.field:focus-within{outline:3px solid #a06a22;outline-offset:1px}
+.field.invalid{border-color:var(--bad)}
+.results{position:sticky;top:16px;background:var(--deep);color:#f8f7f0;padding:26px}
+.results .eyebrow{color:#c8d7c2}
+.big{font:clamp(34px,4vw,48px)/1.1 Georgia,serif;margin:6px 0 4px;overflow-wrap:anywhere}
+.sub{color:#c2d1c9;font-size:13px;margin:0 0 18px}
+.bar{display:flex;height:14px;background:#1e493f;margin:0 0 14px;overflow:hidden}
+.bar i{display:block;height:100%;transition:width .25s}
+dl{display:grid;grid-template-columns:auto 1fr auto;gap:9px 10px;margin:0 0 18px;font-size:13px;align-items:center}
+dt{display:contents}
+.sw{width:10px;height:10px;display:inline-block}
+dd{margin:0;text-align:right;font-weight:bold;white-space:nowrap}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;border-top:1px solid #426257;padding-top:16px}
+.kpis div{min-width:0}
+.kpis strong{display:block;font:22px Georgia,serif;overflow-wrap:anywhere}
+.kpis span{font-size:11px;color:#c2d1c9}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+button{font:13px Arial;padding:10px 14px;cursor:pointer;border:1px solid #6d8c7f;background:transparent;color:#f8f7f0}
+button.primary{background:var(--lime);color:var(--deep);border-color:var(--lime)}
+button:focus-visible{outline:3px solid #e0b86b;outline-offset:3px}
+#error{color:#ffb4a8;font-size:13px;min-height:1em;margin:10px 0 0}
+details{margin-top:16px;border-top:1px solid #426257;padding-top:12px;font-size:12px;color:#d9e1db}
+summary{cursor:pointer;color:#f8f7f0}
+details li{margin-bottom:6px}
+.note{font-size:11px;color:var(--muted);margin-top:14px}
+@media(max-width:860px){.grid{grid-template-columns:1fr}.results{position:static}}
+@media(max-width:480px){.row{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr}.wrap{padding:20px 16px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <p class="eyebrow">TREASURY TRANSFORMATION ROI SIMULATOR · INTERACTIVE PROTOTYPE</p>
+  <h1>Where does treasury value<br><em>actually come from?</em></h1>
+  <p class="lede">Change any assumption and see the effect on working capital, bank fees, straight-through processing and cash-application effort. The starting values are examples. Replace them with your own.</p>
+
+  <div class="grid">
+    <form id="roi-form" novalidate>
+      <fieldset><legend>Working capital</legend>
+        <div class="row"><label for="annualRevenue">Annual revenue<small>Collected through the order-to-cash process</small></label><div class="field"><span>$</span><input id="annualRevenue" name="annualRevenue" inputmode="decimal"></div></div>
+        <div class="row"><label for="dsoReductionDays">DSO reduction<small>Days of faster cash application and visibility</small></label><div class="field"><input id="dsoReductionDays" name="dsoReductionDays" inputmode="decimal"><span>days</span></div></div>
+        <div class="row"><label for="costOfCapitalPct">Cost of capital<small>Used to value the released cash</small></label><div class="field"><input id="costOfCapitalPct" name="costOfCapitalPct" inputmode="decimal"><span>%</span></div></div>
+      </fieldset>
+      <fieldset><legend>Bank fees</legend>
+        <div class="row"><label for="annualBankFees">Annual bank fees<small>Account maintenance, payments, statements</small></label><div class="field"><span>$</span><input id="annualBankFees" name="annualBankFees" inputmode="decimal"></div></div>
+        <div class="row"><label for="feeReductionPct">Fee reduction<small>From account rationalization and bank-fee analysis</small></label><div class="field"><input id="feeReductionPct" name="feeReductionPct" inputmode="decimal"><span>%</span></div></div>
+      </fieldset>
+      <fieldset><legend>Payments: straight-through processing</legend>
+        <div class="row"><label for="annualPayments">Payments per year<small>Outgoing payment instructions</small></label><div class="field"><input id="annualPayments" name="annualPayments" inputmode="numeric"></div></div>
+        <div class="row"><label for="currentStpPct">Current STP rate<small>Payments with no manual touch today</small></label><div class="field"><input id="currentStpPct" name="currentStpPct" inputmode="decimal"><span>%</span></div></div>
+        <div class="row"><label for="targetStpPct">Target STP rate<small>For example after BCM and ISO 20022 harmonization</small></label><div class="field"><input id="targetStpPct" name="targetStpPct" inputmode="decimal"><span>%</span></div></div>
+        <div class="row"><label for="costPerManualPayment">Cost per manual payment<small>Fully loaded handling cost</small></label><div class="field"><span>$</span><input id="costPerManualPayment" name="costPerManualPayment" inputmode="decimal"></div></div>
+      </fieldset>
+      <fieldset><legend>Cash application exceptions</legend>
+        <div class="row"><label for="annualCashExceptions">Exceptions per year<small>Unapplied or unidentified receipts</small></label><div class="field"><input id="annualCashExceptions" name="annualCashExceptions" inputmode="numeric"></div></div>
+        <div class="row"><label for="autoResolvePct">Resolved by the agent<small>Share proposed and accepted without manual research</small></label><div class="field"><input id="autoResolvePct" name="autoResolvePct" inputmode="decimal"><span>%</span></div></div>
+        <div class="row"><label for="costPerException">Cost per exception<small>Analyst research and posting effort</small></label><div class="field"><span>$</span><input id="costPerException" name="costPerException" inputmode="decimal"></div></div>
+      </fieldset>
+      <fieldset><legend>Investment</legend>
+        <div class="row"><label for="oneTimeInvestment">One-time investment<small>Implementation, licences, change management</small></label><div class="field"><span>$</span><input id="oneTimeInvestment" name="oneTimeInvestment" inputmode="decimal"></div></div>
+      </fieldset>
+    </form>
+
+    <section class="results" aria-live="polite" aria-label="Simulation results">
+      <p class="eyebrow">ESTIMATED RECURRING ANNUAL BENEFIT</p>
+      <p class="big" id="total">–</p>
+      <p class="sub" id="wc">–</p>
+      <div class="bar" id="bar" aria-hidden="true"><i style="background:var(--c1)"></i><i style="background:var(--c2)"></i><i style="background:var(--c3)"></i><i style="background:var(--c4)"></i></div>
+      <dl>
+        <dt><span class="sw" style="background:var(--c1)"></span><span>Financing value of released cash</span></dt><dd id="r-fin">–</dd>
+        <dt><span class="sw" style="background:#6f8f5f"></span><span>Bank fee reduction</span></dt><dd id="r-fee">–</dd>
+        <dt><span class="sw" style="background:var(--c3)"></span><span id="l-stp">STP gains</span></dt><dd id="r-stp">–</dd>
+        <dt><span class="sw" style="background:var(--c4)"></span><span id="l-exc">Exception effort avoided</span></dt><dd id="r-exc">–</dd>
+      </dl>
+      <div class="kpis">
+        <div><strong id="k-wc">–</strong><span>Working capital released (one-time)</span></div>
+        <div><strong id="k-pay">–</strong><span>Payback period</span></div>
+        <div><strong id="k-net">–</strong><span>3-year net benefit</span></div>
+      </div>
+      <p id="error" role="alert"></p>
+      <div class="actions">
+        <button type="button" class="primary" id="copy">Copy summary</button>
+        <button type="button" id="reset">Reset to example</button>
+      </div>
+      <details>
+        <summary>How each number is calculated</summary>
+        <ul>
+          <li>Working capital released = annual revenue ÷ 365 × DSO reduction days.</li>
+          <li>Financing value = working capital released × cost of capital.</li>
+          <li>Bank fee reduction = annual bank fees × fee reduction %.</li>
+          <li>STP gains = payments × (target STP − current STP) × cost per manual payment.</li>
+          <li>Exception effort avoided = exceptions × share resolved × cost per exception.</li>
+          <li>Payback = one-time investment ÷ (annual benefit ÷ 12). 3-year net = 3 × annual benefit − investment.</li>
+        </ul>
+      </details>
+    </section>
+  </div>
+  <p class="note">Illustrative estimates only, based entirely on the assumptions entered. These are not benchmarks, quotes or measured client results. Excludes tax, FX, implementation timing and ramp-up. Nothing you enter is sent or stored.</p>
+</main>
+<script src="roi.js"></script>
+<script>
+(() => {
+  'use strict';
+  const {evaluate, EXAMPLE} = window.PortfolioROI;
+  const form = document.getElementById('roi-form');
+  const $ = id => document.getElementById(id);
+  const usd = n => new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD', maximumFractionDigits: 0}).format(n);
+  const compact = n => new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD', notation: 'compact', maximumFractionDigits: 1}).format(n);
+  const num = n => new Intl.NumberFormat('en-US').format(n);
+  let last = null;
+
+  function fill(values) { for (const [k, v] of Object.entries(values)) form.elements[k].value = num(v); }
+  function read() {
+    const out = {};
+    for (const el of form.elements) {
+      if (!el.name) continue;
+      const raw = el.value.replace(/[,\s$%]/g, '');
+      out[el.name] = raw === '' ? NaN : Number(raw);
+    }
+    return out;
+  }
+  function render() {
+    for (const el of form.elements) el.closest('.field')?.classList.remove('invalid');
+    let r;
+    try { r = evaluate(read()); }
+    catch (e) {
+      $('error').textContent = e.message.replace(/^[a-zA-Z]+(?= )/, k => (form.elements[k]?.closest('.row')?.querySelector('label')?.firstChild.textContent.trim() || k));
+      const key = e.message.split(' ')[0]; form.elements[key]?.closest('.field')?.classList.add('invalid');
+      if (/Target STP/.test(e.message)) form.elements.targetStpPct.closest('.field').classList.add('invalid');
+      return;
+    }
+    $('error').textContent = '';
+    last = r;
+    $('total').textContent = usd(r.annualBenefit);
+    $('wc').textContent = 'plus ' + usd(r.workingCapitalReleased) + ' of one-time working capital released';
+    $('r-fin').textContent = usd(r.financingBenefit);
+    $('r-fee').textContent = usd(r.bankFeeSavings);
+    $('r-stp').textContent = usd(r.stpSavings);
+    $('l-stp').textContent = 'STP gains (' + num(r.paymentsMovedToStp) + ' payments no longer touched)';
+    $('r-exc').textContent = usd(r.exceptionSavings);
+    $('l-exc').textContent = 'Exception effort avoided (' + num(r.exceptionsResolved) + ' items)';
+    $('k-wc').textContent = compact(r.workingCapitalReleased);
+    $('k-pay').textContent = r.paybackMonths === null ? 'n/a' : (r.paybackMonths < 1 ? '< 1 month' : r.paybackMonths.toFixed(1) + ' months');
+    $('k-net').textContent = compact(r.threeYearNet);
+    const parts = [r.financingBenefit, r.bankFeeSavings, r.stpSavings, r.exceptionSavings];
+    const total = parts.reduce((a, b) => a + b, 0) || 1;
+    [...$('bar').children].forEach((bar, i) => { bar.style.width = (parts[i] / total * 100) + '%'; });
+    postHeight();
+  }
+  form.addEventListener('input', render);
+  form.addEventListener('focusout', e => { const el = e.target; const raw = el.value.replace(/[,\s$%]/g, ''); if (raw !== '' && Number.isFinite(Number(raw))) el.value = num(Number(raw)); });
+  form.addEventListener('submit', e => e.preventDefault());
+  $('reset').addEventListener('click', () => { fill(EXAMPLE); render(); });
+  $('copy').addEventListener('click', async () => {
+    if (!last) return;
+    const v = read();
+    const text = ['Treasury Transformation ROI Simulator (illustrative estimate)',
+      'Estimated recurring annual benefit: ' + usd(last.annualBenefit),
+      '- Financing value of released cash: ' + usd(last.financingBenefit) + ' (' + usd(last.workingCapitalReleased) + ' released at ' + v.costOfCapitalPct + '%)',
+      '- Bank fee reduction: ' + usd(last.bankFeeSavings),
+      '- STP gains: ' + usd(last.stpSavings),
+      '- Exception effort avoided: ' + usd(last.exceptionSavings),
+      'Payback: ' + (last.paybackMonths === null ? 'n/a' : last.paybackMonths.toFixed(1) + ' months') + ' · 3-year net: ' + usd(last.threeYearNet),
+      'Model: jyotinarang.com/roi-simulator.html'].join('\n');
+    try { await navigator.clipboard.writeText(text); $('copy').textContent = 'Copied ✓'; }
+    catch { $('copy').textContent = 'Copy not available'; }
+    setTimeout(() => { $('copy').textContent = 'Copy summary'; }, 2000);
+  });
+  function postHeight() { try { if (window.parent !== window && window.innerWidth >= 280) window.parent.postMessage({type: 'jn-embed-height', height: Math.ceil(document.querySelector('.wrap').getBoundingClientRect().height) + 4}, '*'); } catch {} }
+  window.addEventListener('resize', postHeight);
+  fill(EXAMPLE); render();
+})();
+</script>
+</body>
+</html>

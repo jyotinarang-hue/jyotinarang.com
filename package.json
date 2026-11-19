@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node scripts/serve.mjs",
+    "sync": "node scripts/sync.mjs",
+    "check": "node verify.cjs",
+    "build": "node scripts/build-pages.mjs",
+    "test": "node verify.cjs && node scripts/test-github.cjs && node scripts/test-sweep.cjs && node scripts/test-roi.cjs"
+  }
+}

@@ -1,0 +1,317 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cash Application Workbench</title>
+<style>
+:root{
+  --bg:#f4f6f9; --panel:#ffffff; --ink:#1b2430; --muted:#5d6b7c; --line:#dde3ea;
+  --brand:#0a6ed1; --brand-ink:#ffffff; --code:#f7f9fb;
+  --ok:#1e7f4f; --ok-bg:#e3f4ea; --warn:#9a6200; --warn-bg:#fdf1d8;
+  --info:#0a5aa8; --info-bg:#e1eefb; --bad:#b42318; --bad-bg:#fde7e5; --hl:#fff1a8;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#11161d; --panel:#19212b; --ink:#e4e9ef; --muted:#97a4b3; --line:#2c3743;
+    --brand:#4aa3f0; --brand-ink:#0b1520; --code:#121a22;
+    --ok:#62d39a; --ok-bg:#163527; --warn:#f0be5c; --warn-bg:#3a2c10;
+    --info:#7fbaf5; --info-bg:#132c45; --bad:#ff8a7e; --bad-bg:#3d1916; --hl:#5a4b00;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#11161d; --panel:#19212b; --ink:#e4e9ef; --muted:#97a4b3; --line:#2c3743;
+  --brand:#4aa3f0; --brand-ink:#0b1520; --code:#121a22;
+  --ok:#62d39a; --ok-bg:#163527; --warn:#f0be5c; --warn-bg:#3a2c10;
+  --info:#7fbaf5; --info-bg:#132c45; --bad:#ff8a7e; --bad-bg:#3d1916; --hl:#5a4b00;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line)}
+header h1{font-size:16px;margin:0;font-weight:600}
+header .sub{color:var(--muted);font-size:12px}
+header .spacer{flex:1}
+.kbd{font:11px ui-monospace,Consolas,monospace;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 4px;color:var(--muted)}
+button{font:inherit;cursor:pointer;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:6px 12px}
+button.primary{background:var(--brand);border-color:var(--brand);color:var(--brand-ink);font-weight:600}
+button:focus-visible{outline:2px solid var(--brand);outline-offset:1px}
+.kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;padding:12px 16px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 12px}
+.kpi .v{font-size:20px;font-weight:650;font-variant-numeric:tabular-nums}
+.kpi .l{font-size:12px;color:var(--muted)}
+main{display:grid;grid-template-columns:300px minmax(0,1fr) 420px;gap:12px;padding:0 16px 16px;align-items:start}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;min-width:0}
+.panel>h2{font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:0;padding:10px 12px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
+.filters{display:flex;gap:6px;flex-wrap:wrap;padding:8px 12px;border-bottom:1px solid var(--line)}
+.chip{font-size:12px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--muted)}
+.chip[aria-pressed="true"]{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}
+.queue{list-style:none;margin:0;padding:0;max-height:calc(100vh - 230px);overflow:auto}
+.queue li{padding:10px 12px;border-bottom:1px solid var(--line);cursor:pointer}
+.queue li[aria-selected="true"]{background:var(--info-bg);box-shadow:inset 3px 0 var(--brand)}
+.queue .row1{display:flex;justify-content:space-between;gap:8px}
+.queue .payer{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.queue .amt{font-variant-numeric:tabular-nums;white-space:nowrap}
+.queue .row2{display:flex;justify-content:space-between;gap:8px;margin-top:4px;font-size:12px;color:var(--muted)}
+.badge{display:inline-block;font-size:11px;font-weight:650;padding:1px 7px;border-radius:4px;white-space:nowrap}
+.b-AUTO_POST{background:var(--ok-bg);color:var(--ok)}
+.b-SUGGEST{background:var(--info-bg);color:var(--info)}
+.b-POST_ON_ACCOUNT{background:var(--warn-bg);color:var(--warn)}
+.b-EXCEPTION{background:var(--bad-bg);color:var(--bad)}
+.b-DONE{background:var(--ok-bg);color:var(--ok)}
+.section{padding:12px;border-bottom:1px solid var(--line)}
+.section:last-child{border-bottom:0}
+.section h3{font-size:12px;margin:0 0 8px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.title{font-size:17px;font-weight:650;margin:0 0 4px}
+.meta{color:var(--muted);font-size:12px;display:flex;gap:12px;flex-wrap:wrap}
+.src{margin-bottom:12px}
+.src .name{font:12px ui-monospace,Consolas,monospace;color:var(--muted);margin-bottom:4px;word-break:break-all}
+pre{margin:0;background:var(--code);border:1px solid var(--line);border-radius:6px;padding:8px 10px;font:12px/1.5 ui-monospace,Consolas,monospace;overflow:auto;white-space:pre}
+mark{background:var(--hl);color:inherit;border-radius:2px;padding:0 1px}
+.legacy{background:var(--bad-bg);color:var(--ink);border-radius:6px;padding:8px 10px;font-size:13px}
+.legacy b{color:var(--bad)}
+.meter{display:grid;grid-template-columns:110px 1fr 44px;align-items:center;gap:8px;margin:6px 0;font-size:13px}
+.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;position:relative}
+.bar>span{display:block;height:100%;border-radius:4px}
+.bar .tick{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--ink);opacity:.5}
+.num{font-variant-numeric:tabular-nums;text-align:right}
+.cust{display:flex;justify-content:space-between;gap:8px;padding:6px 0}
+.cust .id{font:12px ui-monospace,Consolas,monospace;color:var(--muted)}
+.steps{list-style:none;margin:0;padding:0}
+.steps li{display:grid;grid-template-columns:20px 1fr;gap:6px;padding:5px 0;font-size:13px}
+.steps .ic{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700;margin-top:1px}
+.r-hit{background:var(--ok-bg);color:var(--ok)}
+.r-miss,.r-skipped{background:var(--line);color:var(--muted)}
+.r-tie,.r-ambiguous,.r-warning,.r-partial,.r-hold{background:var(--warn-bg);color:var(--warn)}
+.r-info,.r-used{background:var(--info-bg);color:var(--info)}
+.steps .sn{font-weight:600}
+.steps .sd{color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:5px 4px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase}
+td.num,th.num{text-align:right}
+tfoot td{font-weight:650;border-bottom:0}
+.diff0{color:var(--ok)} .diffx{color:var(--bad)}
+.note{font-size:13px;margin:0;padding-left:18px}
+.note li{margin:3px 0}
+.explain{font-size:13px;background:var(--info-bg);border-radius:6px;padding:8px 10px;margin-top:8px}
+.later{border:1px dashed var(--warn);border-radius:6px;padding:8px 10px;margin-top:8px;font-size:13px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:6px;font-size:13px;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+.disclaimer{color:var(--muted);font-size:12px;padding:0 16px 16px}
+@media (max-width:1200px){main{grid-template-columns:260px minmax(0,1fr)} #decision{grid-column:1 / -1}}
+@media (max-width:760px){
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  main{grid-template-columns:minmax(0,1fr)}
+  .queue{max-height:260px}
+  header .keys{display:none}
+}
+</style>
+</head>
+<body><aside style="background:#fff0c7;color:#352c12;padding:14px 24px;font:14px/1.5 system-ui;position:relative;z-index:100"><a href="../../lockbox-agent.html#demo" target="_top" style="color:inherit">â† Return to portfolio</a> Â· Illustrative workbench with synthetic data. Confidence scores and decisions are examples, not outputs from a trained model or live SAP system.</aside>
+<header>
+  <div>
+    <h1>Cash Application Workbench</h1>
+    <div class="sub">AI Customer Identification Engine Â· mockup Â· <span id="hdrMeta"></span></div>
+  </div>
+  <div class="spacer"></div>
+  <div class="sub keys"><span class="kbd">J</span>/<span class="kbd">K</span> move Â· <span class="kbd">A</span> approve Â· <span class="kbd">E</span> exception</div>
+  <button id="themeBtn" type="button" aria-label="Toggle color theme">Theme</button>
+</header>
+
+<section class="kpis" id="kpis" aria-label="Batch metrics"></section>
+
+<main>
+  <section class="panel" aria-label="Payment queue">
+    <h2>Payments <span id="qCount"></span></h2>
+    <div class="filters" id="filters" role="group" aria-label="Filter by action"></div>
+    <ul class="queue" id="queue" role="listbox" aria-label="Payments"></ul>
+  </section>
+
+  <section class="panel" id="evidence" aria-label="Source evidence"></section>
+
+  <section class="panel" id="decision" aria-label="Agent decision"></section>
+</main>
+<p class="disclaimer">Illustrative mockup. Data, confidence scores and agent traces come from <code>scenarios/scenarios.json</code> (generated by <code>tools/generate.py</code>). No SAP system is connected. Approve and exception buttons only change local state.</p>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="workbench-data.js"></script>
+<script>
+(function(){
+  const D = window.LOCKBOX_DATA;
+  if(!D){document.body.innerHTML='<p style="padding:16px">workbench-data.js not found. Run <code>python tools/generate.py</code> from the Lockbox folder.</p>';return;}
+
+  const ACTION_LABEL={AUTO_POST:"Auto-post",SUGGEST:"Suggest",POST_ON_ACCOUNT:"On account",EXCEPTION:"Exception",DONE:"Done"};
+  const RESULT_ICON={hit:"âœ“",miss:"â€“",skipped:"Â·",tie:"=",ambiguous:"?",warning:"!",partial:"~",hold:"â€–",info:"i",used:"AI"};
+  const custName=Object.fromEntries(D.customers.map(c=>[c.KUNNR,c.NAME1]));
+  const fmt=n=>Number(n).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+  const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const state={sel:0,filter:"ALL",status:{},checks:{}};
+  const S=D.scenarios;
+
+  // theme toggle
+  const root=document.documentElement;
+  try{const t=localStorage.getItem("wb-theme"); if(t) root.dataset.theme=t;}catch(e){}
+  document.getElementById("themeBtn").onclick=()=>{
+    const dark=root.dataset.theme?root.dataset.theme==="dark":matchMedia("(prefers-color-scheme: dark)").matches;
+    root.dataset.theme=dark?"light":"dark";
+    try{localStorage.setItem("wb-theme",root.dataset.theme);}catch(e){}
+  };
+
+  document.getElementById("hdrMeta").textContent=`Company code ${D.company_code} Â· value date ${D.value_date}`;
+  const statusOf=s=>state.status[s.id]||s.expected.action;
+
+  function kpis(){
+    const total=S.reduce((a,s)=>a+Number(s.payment.amount),0);
+    const by=a=>S.filter(s=>s.expected.action===a);
+    const auto=by("AUTO_POST");
+    const autoAmt=auto.reduce((a,s)=>a+Number(s.payment.amount),0);
+    const open=S.filter(s=>["EXCEPTION","POST_ON_ACCOUNT","SUGGEST"].includes(statusOf(s)));
+    const items=[
+      [S.length,"Payments in batch"],
+      [`${Math.round(auto.length/S.length*100)}%`,"Auto-posted (count)"],
+      [`${Math.round(autoAmt/total*100)}%`,"Auto-posted (value)"],
+      [by("SUGGEST").length,"One-click suggestions"],
+      [by("POST_ON_ACCOUNT").length+by("EXCEPTION").length,"On account + exceptions"],
+      [`$${fmt(open.reduce((a,s)=>a+Number(s.payment.amount),0))}`,"Still needs a person"],
+    ];
+    document.getElementById("kpis").innerHTML=items.map(([v,l])=>`<div class="kpi"><div class="v">${esc(v)}</div><div class="l">${esc(l)}</div></div>`).join("");
+  }
+
+  function filters(){
+    const opts=["ALL","AUTO_POST","SUGGEST","POST_ON_ACCOUNT","EXCEPTION"];
+    const el=document.getElementById("filters");
+    el.innerHTML=opts.map(o=>{
+      const n=o==="ALL"?S.length:S.filter(s=>s.expected.action===o).length;
+      return `<button type="button" class="chip" data-f="${o}" aria-pressed="${state.filter===o}">${o==="ALL"?"All":ACTION_LABEL[o]} ${n}</button>`;
+    }).join("");
+    el.querySelectorAll("button").forEach(b=>b.onclick=()=>{state.filter=b.dataset.f;render();});
+  }
+
+  const visible=()=>S.map((s,i)=>[s,i]).filter(([s])=>state.filter==="ALL"||s.expected.action===state.filter);
+
+  function queue(){
+    const v=visible();
+    document.getElementById("qCount").textContent=`(${v.length})`;
+    const ul=document.getElementById("queue");
+    ul.innerHTML=v.map(([s,i])=>{
+      const st=statusOf(s);
+      return `<li role="option" data-i="${i}" aria-selected="${i===state.sel}">
+        <div class="row1"><span class="payer">${esc(s.payer_text)}</span><span class="amt">${fmt(s.payment.amount)}</span></div>
+        <div class="row2"><span>${esc(s.id)} Â· ${esc(s.channel)}</span><span class="badge b-${st}">${ACTION_LABEL[st]}</span></div></li>`;
+    }).join("");
+    ul.querySelectorAll("li").forEach(li=>li.onclick=()=>{state.sel=+li.dataset.i;render();});
+    const cur=ul.querySelector('[aria-selected="true"]'); if(cur) cur.scrollIntoView({block:"nearest"});
+  }
+
+  function highlight(text,tokens){
+    let h=esc(text);
+    tokens.slice().sort((a,b)=>b.length-a.length).forEach(t=>{
+      const et=esc(t); if(!et) return;
+      h=h.split(et).join(`\u0000${et}\u0001`);
+    });
+    return h.replace(/\u0000/g,"<mark>").replace(/\u0001/g,"</mark>");
+  }
+
+  function evidence(s){
+    const srcs=s.evidence.map(e=>`<div class="src"><div class="name">${esc(e.source)}</div><pre>${highlight(e.lines.join("\n"),s.highlight||[])}</pre></div>`).join("");
+    document.getElementById("evidence").innerHTML=`
+      <h2>Source evidence</h2>
+      <div class="section">
+        <p class="title">${esc(s.title)}</p>
+        <div class="meta"><span>${esc(s.id)}</span><span>${esc(s.channel)}</span><span>Pattern: ${esc(s.pattern)}</span><span>Value date ${esc(s.payment.value_date)}</span></div>
+      </div>
+      <div class="section"><h3>Raw inputs (highlighted = evidence used)</h3>${srcs}</div>
+      <div class="section"><h3>Legacy SAP rules</h3><div class="legacy"><b>Why it fails:</b> ${esc(s.why_legacy_fails)}</div></div>`;
+  }
+
+  function meter(label,v,threshold){
+    const pct=Math.round(v*1000)/10;
+    const color=v>=threshold?"var(--ok)":v>=D.thresholds.suggest_min?"var(--info)":"var(--bad)";
+    return `<div class="meter"><span>${label}</span><div class="bar" role="img" aria-label="${label} ${pct}%"><span style="width:${pct}%;background:${color}"></span><i class="tick" style="left:${threshold*100}%"></i></div><span class="num">${pct}%</span></div>`;
+  }
+
+  function appRows(s){
+    // expected applications + other open items of the same customers (unchecked) for the analyst to toggle
+    const exp=s.expected.later?s.expected.later.applications:s.expected.applications;
+    const rows=exp.map(a=>({key:a.belnr,kunnr:a.kunnr,xblnr:a.xblnr,amount:Number(a.amount),type:a.type,a,def:!s.expected.later}));
+    const custs=new Set(s.expected.customers);
+    D.open_items.filter(o=>custs.has(o.kunnr)&&!rows.some(r=>r.key===o.belnr)).forEach(o=>{
+      rows.push({key:o.belnr,kunnr:o.kunnr,xblnr:o.xblnr,amount:Number(o.amount)*(o.shkzg==="H"?-1:1),type:o.blart==="DG"?"credit memo":"open",def:false});
+    });
+    return rows;
+  }
+
+  function decision(s){
+    const st=statusOf(s), t=s.trace, e=s.expected;
+    const rows=appRows(s);
+    const ck=state.checks[s.id]||(state.checks[s.id]=Object.fromEntries(rows.map(r=>[r.key,r.def])));
+    const applied=rows.filter(r=>ck[r.key]).reduce((a,r)=>a+r.amount,0);
+    const held=Number(e.on_account||0)+Number(e.unapplied||0);
+    const diff=Math.round((Number(s.payment.amount)-applied)*100)/100;
+
+    const custs=e.customers.length?e.customers.map(k=>`<div class="cust"><span>${esc(custName[k]||k)}</span><span class="id">${esc(k)}</span></div>`).join("")
+      :`<p class="note" style="padding:0;color:var(--muted)">No customer identified with enough confidence.</p>`;
+
+    const steps=t.steps.map(x=>`<li><span class="ic r-${esc(x.result)}" title="${esc(x.result)}">${RESULT_ICON[x.result]||"Â·"}</span>
+      <div><span class="sn">${esc(x.step.replace(/_/g," "))}</span> <span class="badge r-${esc(x.result)}">${esc(x.result)}</span><div class="sd">${esc(x.detail)}</div></div></li>`).join("");
+
+    const table=rows.length?`<table><thead><tr><th></th><th>Invoice</th><th>Customer</th><th>Type</th><th class="num">Apply</th></tr></thead><tbody>
+      ${rows.map(r=>`<tr><td><input type="checkbox" data-k="${esc(r.key)}" ${ck[r.key]?"checked":""} aria-label="Apply ${esc(r.xblnr)}"></td>
+        <td>${esc(r.xblnr)}${r.a&&r.a.residual?`<div class="sd" style="font-size:12px;color:var(--muted)">residual ${fmt(r.a.residual)} Â· reason ${esc(r.a.reason_code)}</div>`:""}${r.a&&r.a.write_off?`<div style="font-size:12px;color:var(--muted)">write-off ${fmt(r.a.write_off)} Â· ${esc(r.a.tolerance_group)}</div>`:""}${r.a&&r.a.remaining_open?`<div style="font-size:12px;color:var(--muted)">${fmt(r.a.remaining_open)} stays open</div>`:""}</td>
+        <td class="id">${esc(r.kunnr)}</td><td>${esc(r.type.replace(/_/g," "))}</td><td class="num">${fmt(r.amount)}</td></tr>`).join("")}
+      </tbody><tfoot><tr><td></td><td colspan="3">Payment ${fmt(s.payment.amount)} âˆ’ applied</td><td class="num ${Math.abs(diff)<0.005?"diff0":"diffx"}">${fmt(diff)}</td></tr></tfoot></table>`
+      :`<p class="sd" style="margin:0;color:var(--muted)">Nothing applied.</p>`;
+
+    const heldNote=held?`<p style="margin:8px 0 0;font-size:13px">${e.on_account?"On account":"Unapplied (bank clearing)"}: <b>${fmt(held)}</b></p>`:"";
+    const later=e.later?`<div class="later"><b>${esc(e.later.date)}:</b> ${esc(e.later.trigger)} â†’ <span class="badge b-${e.later.action}">${ACTION_LABEL[e.later.action]}</span> clears ${e.later.applications.map(a=>esc(a.xblnr)).join(" + ")}. Tick them above to preview that application.</div>`:"";
+    const follow=(e.follow_ups||[]).length?`<div class="section"><h3>Follow-ups & controls</h3><ul class="note">${e.follow_ups.map(f=>`<li>${esc(f)}</li>`).join("")}</ul></div>`:"";
+    const done=st==="DONE";
+
+    document.getElementById("decision").innerHTML=`
+      <h2>Agent decision <span class="badge b-${st}">${ACTION_LABEL[st]}</span></h2>
+      <div class="section">
+        ${meter("Who paid",t.customer_confidence,D.thresholds.auto_post_customer)}
+        ${meter("What for",t.application_confidence,D.thresholds.auto_post_application)}
+        <div class="explain">${esc(t.explanation)}</div>
+      </div>
+      <div class="section"><h3>Customer</h3>${custs}</div>
+      <div class="section"><h3>Pipeline trace</h3><ul class="steps">${steps}</ul></div>
+      <div class="section"><h3>Application</h3>${table}${heldNote}${later}</div>
+      ${follow}
+      <div class="section actions">
+        <button class="primary" id="approveBtn" type="button" ${done?"disabled":""}>${st==="AUTO_POST"?"Confirm posting":st==="EXCEPTION"?"Post as selected":"Approve"} <span class="kbd">A</span></button>
+        <button id="excBtn" type="button" ${done?"disabled":""}>Send to exception <span class="kbd">E</span></button>
+      </div>`;
+
+    document.querySelectorAll('#decision input[type=checkbox]').forEach(cb=>cb.onchange=()=>{ck[cb.dataset.k]=cb.checked;decision(s);});
+    const ab=document.getElementById("approveBtn"), eb=document.getElementById("excBtn");
+    if(ab) ab.onclick=approve; if(eb) eb.onclick=exception;
+  }
+
+  function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove("show"),1800);}
+  function approve(){const s=S[state.sel]; if(statusOf(s)==="DONE")return; state.status[s.id]="DONE"; toast(`${s.id} approved (mock: nothing posted)`); next(1);}
+  function exception(){const s=S[state.sel]; if(statusOf(s)==="DONE")return; state.status[s.id]="EXCEPTION"; toast(`${s.id} sent to exception queue`); render();}
+  function next(d){const v=visible().map(([,i])=>i); if(!v.length)return; const p=v.indexOf(state.sel); state.sel=v[Math.max(0,Math.min(v.length-1,(p<0?0:p)+d))]; render();}
+
+  document.addEventListener("keydown",ev=>{
+    if(ev.target.matches("input,textarea")||ev.ctrlKey||ev.metaKey||ev.altKey) return;
+    const k=ev.key.toLowerCase();
+    if(k==="j"||ev.key==="ArrowDown"){next(1);ev.preventDefault();}
+    else if(k==="k"||ev.key==="ArrowUp"){next(-1);ev.preventDefault();}
+    else if(k==="a") approve();
+    else if(k==="e") exception();
+  });
+
+  function render(){
+    const v=visible().map(([,i])=>i);
+    if(v.length&&!v.includes(state.sel)) state.sel=v[0];
+    kpis(); filters(); queue();
+    const s=S[state.sel]; evidence(s); decision(s);
+  }
+  render();
+})();
+</script>
+</body>
+</html>
+
