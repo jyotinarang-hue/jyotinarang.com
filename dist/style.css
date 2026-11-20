@@ -66,3 +66,36 @@ footer .footer-links{display:flex;gap:20px;flex-wrap:wrap;font-size:12px;positio
 @media(max-width:1100px){.pillar-grid,.showcase-grid,.topic-grid,.video-grid{grid-template-columns:1fr 1fr}.stats-4{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:900px){.header-cta{display:none}.nav-resume{border:0;padding:0}.inquire,.book-banner{grid-template-columns:1fr}.book-cover{max-width:220px}footer .footer-links{display:flex;order:0}}
 @media(max-width:620px){.pillar-grid,.showcase-grid,.topic-grid,.video-grid,.before-after,.form-row,.topic-picker{grid-template-columns:1fr}.before-after>div:last-child{border-left:0;border-top:1px solid var(--line)}.stats-4{grid-template-columns:1fr 1fr}.showcase-card,.pillar-grid article,.topic{padding:24px}.inquiry-form{padding:22px}.modal-head{padding:18px 18px 8px}.modal-head h2{font-size:24px}.modal-body{padding:16px 18px 22px}.modal-frame{height:640px}.notify-row{flex-direction:column}.notify-row input[type=email]{border-right:1px solid var(--line);border-bottom:0}.bio-text{padding:20px}.book-flag{font-size:11px}}
+
+/* Hero portrait composition (added 2026-11-20) */
+.visually-hidden{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.hero{overflow-x:clip}
+.hero figure.portrait{position:relative;width:100%;max-width:420px;justify-self:center;margin:36px 40px 44px 24px;isolation:isolate}
+.portrait-frame{position:relative;aspect-ratio:520/634;border-radius:999px 999px 22px 22px;overflow:hidden;background:#dfe3dc;box-shadow:0 34px 60px -28px rgba(21,61,54,.55);animation:portrait-rise 1s cubic-bezier(.2,.7,.2,1) both}
+.portrait-frame::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,0) 58%,rgba(21,61,54,.28));pointer-events:none}
+.hero figure.portrait img{width:100%;height:100%;object-fit:cover;object-position:50% 30%;border-radius:0;transition:transform 1.2s cubic-bezier(.2,.7,.2,1)}
+.hero figure.portrait:hover img{transform:scale(1.04)}
+.portrait-back,.portrait-line{position:absolute;border-radius:999px 999px 22px 22px;z-index:-1;pointer-events:none}
+.portrait-back{top:-26px;left:30px;right:-30px;bottom:44px;background:linear-gradient(160deg,#2c5c4f 0%,#153d36 70%);animation:portrait-rise 1s .12s cubic-bezier(.2,.7,.2,1) both}
+.portrait-back::before{content:'';position:absolute;inset:0;border-radius:inherit;background:radial-gradient(circle at 1px 1px,rgba(212,226,161,.35) 1px,transparent 1.6px) 0 0/14px 14px;-webkit-mask:linear-gradient(200deg,#000 0%,transparent 55%);mask:linear-gradient(200deg,#000 0%,transparent 55%)}
+.portrait-line{top:24px;left:-22px;right:22px;bottom:-22px;border:1.5px solid #a5834c;animation:portrait-rise 1s .24s cubic-bezier(.2,.7,.2,1) both}
+.portrait-ring{position:absolute;width:36%;min-width:104px;left:-15%;bottom:13%;z-index:2;overflow:visible;filter:drop-shadow(0 12px 20px rgba(21,61,54,.28));animation:portrait-pop .8s .45s cubic-bezier(.2,.9,.3,1.3) both}
+.portrait-ring circle{fill:var(--paper);stroke:#a5834c;stroke-width:1}
+.portrait-ring .spin{transform-origin:100px 100px;animation:ring-spin 36s linear infinite}
+.portrait-ring textPath{font:700 13px Arial,sans-serif;letter-spacing:2.6px;fill:var(--green)}
+.portrait-ring .ring-num{font:italic 58px Georgia,serif;fill:var(--ink)}
+.portrait-ring .ring-sub{font:700 10px Arial,sans-serif;letter-spacing:2px;fill:#8c682f}
+.portrait-chip{position:absolute;z-index:3;display:flex;flex-direction:column;gap:3px;padding:12px 16px;font-size:12px;line-height:1.3;box-shadow:0 16px 30px -14px rgba(21,61,54,.5);transition:transform .3s}
+.portrait-chip:hover{transform:translateY(-3px)}
+.chip-book{top:16%;right:-15%;background:white;border-left:3px solid #a5834c;color:var(--ink);animation:portrait-pop .7s .6s cubic-bezier(.2,.9,.3,1.3) both,chip-float 6s 1.4s ease-in-out infinite}
+.chip-book span{font-size:8px;font-weight:700;letter-spacing:1.6px;color:#8c682f}
+.chip-live{bottom:-14px;right:6%;flex-direction:row;align-items:center;gap:9px;background:var(--ink);color:white;border-radius:40px;padding:11px 18px;animation:portrait-pop .7s .75s cubic-bezier(.2,.9,.3,1.3) both}
+.chip-live i{width:8px;height:8px;border-radius:50%;background:#9fd27a;box-shadow:0 0 0 0 rgba(159,210,122,.7);animation:live-pulse 2s infinite}
+@keyframes portrait-rise{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+@keyframes portrait-pop{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:none}}
+@keyframes ring-spin{to{transform:rotate(360deg)}}
+@keyframes chip-float{0%,100%{translate:0 0}50%{translate:0 -7px}}
+@keyframes live-pulse{0%{box-shadow:0 0 0 0 rgba(159,210,122,.7)}80%,100%{box-shadow:0 0 0 10px rgba(159,210,122,0)}}
+@media(max-width:900px){.hero figure.portrait{margin:30px 26px 40px 30px}.chip-book{right:-10%;font-size:11px;padding:10px 12px}.chip-live{font-size:11px}}
+@media(max-width:620px){.hero figure.portrait{width:calc(100% - 70px);max-width:340px;margin:34px auto 40px}.hero figure.portrait img{height:100%}.portrait-back{top:-18px;left:22px;right:-22px}.portrait-line{top:18px;left:-16px;right:16px;bottom:-16px}.portrait-ring{width:34%;min-width:96px;left:-13%;bottom:16%}.chip-book{right:-12%;top:10%}.chip-live{right:2%}}
+@media(prefers-reduced-motion:reduce){.portrait-frame,.portrait-back,.portrait-line,.portrait-ring,.portrait-chip,.portrait-ring .spin,.chip-live i{animation:none!important}.hero figure.portrait img{transition:none}}
