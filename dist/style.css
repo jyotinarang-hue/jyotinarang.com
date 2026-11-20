@@ -99,3 +99,10 @@ footer .footer-links{display:flex;gap:20px;flex-wrap:wrap;font-size:12px;positio
 @media(max-width:900px){.hero figure.portrait{margin:30px 26px 40px 30px}.chip-book{right:-10%;font-size:11px;padding:10px 12px}.chip-live{font-size:11px}}
 @media(max-width:620px){.hero figure.portrait{width:calc(100% - 70px);max-width:340px;margin:34px auto 40px}.hero figure.portrait img{height:100%}.portrait-back{top:-18px;left:22px;right:-22px}.portrait-line{top:18px;left:-16px;right:16px;bottom:-16px}.portrait-ring{width:34%;min-width:96px;left:-13%;bottom:16%}.chip-book{right:-12%;top:10%}.chip-live{right:2%}}
 @media(prefers-reduced-motion:reduce){.portrait-frame,.portrait-back,.portrait-line,.portrait-ring,.portrait-chip,.portrait-ring .spin,.chip-live i{animation:none!important}.hero figure.portrait img{transition:none}}
+
+/* Portrait seal logo (added 2026-11-20) */
+.brand-mark{width:44px;height:44px;display:block;flex:none;border-radius:50%;transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+.brand:hover .brand-mark{transform:rotate(-8deg) scale(1.06)}
+footer .brand-mark{width:38px;height:38px}
+@media(max-width:620px){.brand-mark{width:38px;height:38px}}
+@media(prefers-reduced-motion:reduce){.brand-mark{transition:none}}
