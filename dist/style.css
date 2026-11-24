@@ -106,3 +106,24 @@ footer .footer-links{display:flex;gap:20px;flex-wrap:wrap;font-size:12px;positio
 footer .brand-mark{width:38px;height:38px}
 @media(max-width:620px){.brand-mark{width:38px;height:38px}}
 @media(prefers-reduced-motion:reduce){.brand-mark{transition:none}}
+
+/* ── Portrait: aura, orbit, depth ── */
+.hero figure.portrait{transform:perspective(1100px) rotateY(calc(var(--tx,0)*7deg)) rotateX(calc(var(--ty,0)*-6deg));transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+.portrait-frame{z-index:1}
+.hero figure.portrait img{object-position:50% 24%}
+.portrait-frame::before{content:'';position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.32) 50%,transparent 65%);transform:translateX(-130%);transition:transform 1.1s cubic-bezier(.2,.7,.2,1)}
+.hero figure.portrait:hover .portrait-frame::before{transform:translateX(130%)}
+.portrait-aura{position:absolute;inset:-6% -14% 4% -10%;z-index:-2;border-radius:50%;background:conic-gradient(from 0deg,rgba(44,92,79,.55),rgba(165,131,76,.5),rgba(212,226,161,.45),rgba(44,92,79,.55));filter:blur(48px);opacity:.55;pointer-events:none;animation:ring-spin 28s linear infinite;translate:calc(var(--tx,0)*-26px) calc(var(--ty,0)*-18px)}
+.portrait-back{translate:calc(var(--tx,0)*-14px) calc(var(--ty,0)*-10px);transition:translate .6s}
+.portrait-ring{translate:calc(var(--tx,0)*14px) calc(var(--ty,0)*10px);transition:translate .6s}
+.portrait-orbit{position:absolute;left:-17%;width:134%;top:52%;height:auto;overflow:visible;pointer-events:none;animation:portrait-pop .9s .9s cubic-bezier(.2,.9,.3,1.3) both}
+.orbit-back{z-index:0}
+.orbit-front{z-index:2}
+.portrait-orbit ellipse{fill:none;stroke:#b08a4f;stroke-width:2.2;filter:drop-shadow(0 0 1.5px rgba(255,255,255,.9))}
+.orbit-back ellipse{stroke-opacity:.55;stroke-dasharray:3 6}
+.orbit-node circle{fill:#a5834c}
+.orbit-node .halo{fill:rgba(165,131,76,.22)}
+.orbit-node text{font:italic 600 17px Georgia,serif;fill:var(--ink);paint-order:stroke;stroke:var(--paper);stroke-width:4px;stroke-linejoin:round}
+.orbit-back .orbit-node{opacity:.55}
+@media(max-width:620px){.portrait-orbit{left:-7%;width:114%}.orbit-node text{font-size:19px}}
+@media(prefers-reduced-motion:reduce){.portrait-aura,.portrait-orbit{animation:none!important}.hero figure.portrait{transform:none}.portrait-frame::before{display:none}}
