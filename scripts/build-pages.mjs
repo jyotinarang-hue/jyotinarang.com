@@ -1,6 +1,8 @@
 ﻿import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
+import crypto from 'node:crypto';
+const ver = f => crypto.createHash('md5').update(fs.readFileSync(path.join('dist', f))).digest('hex').slice(0, 8);
 
 const sections = JSON.parse(fs.readFileSync('content/sections.json', 'utf8').replace(/^\uFEFF/, ''));
 const context = {window: {}}; vm.createContext(context);
@@ -119,8 +121,9 @@ for (const p of pages) {
     `<meta property="og:url" content="${canonical(p.file)}">`, `<meta property="og:image" content="${BASE}/${ogImage}">`, `<meta property="og:image:alt" content="Jyoti Narang, SAP Treasury, Banking and Enterprise AI">`,
     ...(p.file === 'index.html' ? ['<meta property="profile:first_name" content="Jyoti">', '<meta property="profile:last_name" content="Narang">'] : []),
     '<meta name="twitter:card" content="summary_large_image">', `<meta name="twitter:title" content="${escape(title)}">`, `<meta name="twitter:description" content="${escape(p.description)}">`, `<meta name="twitter:image" content="${BASE}/${ogImage}">`,
-    '<link rel="stylesheet" href="style.css">',
-    '<script defer src="data/content.js"></script>', '<script defer src="github.js"></script>', '<script defer src="portfolio.js"></script>', '<script defer src="site.js"></script>', p.extra,
+    `<link rel="stylesheet" href="style.css?v=${ver('style.css')}">`,
+    ...['data/content.js', 'github.js', 'portfolio.js', 'site.js'].map(f => `<script defer src="${f}?v=${ver(f)}"></script>`), p.extra,
+    /^[a-z0-9-]+$/.test(site.goatcounter || '') ? `<script data-goatcounter="https://${site.goatcounter}.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>` : '',
     p.jsonld ? `<script type="application/ld+json">${JSON.stringify(personLD).replace(/</g, '\\u003c')}</script>` : ''
   ].filter(Boolean).join('');
   fs.writeFileSync(path.join('dist', p.file), `<!doctype html><html lang="en"><head>${head}</head><body><a class="skip" href="#main">Skip to content</a>${header}<main id="main">${crumb}${p.body}${rootLink(sections.contact)}</main>${footer}</body></html>`);

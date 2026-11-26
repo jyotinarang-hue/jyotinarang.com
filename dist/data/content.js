@@ -7,7 +7,9 @@
     email: 'Jyoti.narang@gmail.com',
     linkedin: 'https://www.linkedin.com/in/jyoti-narang-30a8ba56/',
     github: 'https://github.com/jyotinarang-hue',
-    credly: 'https://www.credly.com/users/jyoti-narang/badges'
+    credly: 'https://www.credly.com/users/jyoti-narang/badges',
+    // Visitor counting with GoatCounter (no cookies). Site code from goatcounter.com, e.g. 'jyotinarang'; empty = off.
+    goatcounter: 'jyoti-narang'
   },
 
   // ── Inquiry form delivery. Fill ONE of these to receive submissions by email. ──
